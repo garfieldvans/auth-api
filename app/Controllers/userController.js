@@ -16,7 +16,7 @@ exports.signup = async (req, res) => {
     const user = await User.create(data);
 
     if (user) {
-      let token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
+      let token = jwt.sign({ id: user.id }, process.env.PUBLIC_KEY, {
         expiresIn: 1 * 24 * 60 * 60 * 1000,
       });
 
