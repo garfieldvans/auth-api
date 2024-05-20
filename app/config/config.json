@@ -1,18 +1,11 @@
-
-  {
+{
     "development": {
-      "username": "avnadmin",
-      "password": "AVNS__hrhYd6v4lPpSPsCtG6",
-      "database": "authdb",
-      "host": "auth-psql-auth-api.g.aivencloud.com",
-      "port": 23660,
-      "dialect": "postgres",
-      "dialectOptions": {
-        "ssl": {
-          "require": true,
-          "rejectUnauthorized": false
-        }
-      }
+      "username": "postgres",
+      "pass": "123",
+      "database": "auth-db",
+      "host": "localhost",
+      "port": 8001,
+      "dialect": "postgres"
     }
   }
   
