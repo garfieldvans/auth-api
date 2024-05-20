@@ -50,10 +50,9 @@ exports.login = async (req, res) => {
           expiresIn: 1 * 24 * 60 * 60 * 1000,
         });
 
-        res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
-        console.log("user", JSON.stringify(user, null, 2));
-        console.log(token);
-        return res.status(201).json({ userName: user.userName, token: token });
+        // Simpan token JWT dalam penyimpanan lokal di frontend
+        // Sertakan token dalam respons JSON
+        return res.status(201).json({ user: user, token: token });
       } else {
         return res.status(401).send("Authentication failed");
       }
@@ -62,6 +61,7 @@ exports.login = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+    return res.status(500).send("Internal Server Error");
   }
 };
 
@@ -88,31 +88,61 @@ exports.getAllUsers = async (req, res) => {
 };
 
 exports.editUser = async (req, res) => {
-    try {
-      const userId = req.user.id;
-      const { fullname, userName, email, password } = req.body;
-  
-      const updatedData = {};
-      if (fullname) updatedData.fullname = fullname;
-      if (userName) updatedData.userName = userName;
-      if (email) updatedData.email = email;
-      if (password) updatedData.password = await bcrypt.hash(password, 10);
-  
-      const user = await User.update(updatedData, {
-        where: {
-          id: userId,
-        },
-        returning: true,
-        plain: true,
-      });
-  
-      if (user) {
-        return res.status(200).json(user[1]); // user[1] contains the updated user object
-      } else {
-        return res.status(404).send("User not found");
-      }
-    } catch (error) {
-      console.log(error);
-      return res.status(500).send("Internal Server Error");
+  try {
+    const userId = req.query.id; // Mengambil ID pengguna dari parameter query
+
+    // Validasi: Pastikan `userId` ada dan merupakan angka
+    if (!userId || isNaN(userId)) {
+      return res.status(400).send("Invalid user ID");
     }
-  };
+
+    const { fullname, userName, email, password } = req.body;
+
+    // Mempersiapkan data yang akan diperbarui
+    const updatedData = {};
+    if (fullname) updatedData.fullname = fullname;
+    if (userName) updatedData.userName = userName;
+    if (email) updatedData.email = email;
+    if (password) updatedData.password = await bcrypt.hash(password, 10);
+
+    // Melakukan pembaruan data
+    const [updatedRows, [updatedUser]] = await User.update(updatedData, {
+      where: { id: userId },
+      returning: true, // Mengembalikan baris yang diperbarui (hanya untuk PostgreSQL)
+    });
+
+    if (updatedRows === 0) {
+      return res.status(404).send("User not found");
+    }
+
+    return res.status(200).json(updatedUser); // Mengembalikan pengguna yang diperbarui
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Internal Server Error");
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const userId = req.query.id; // Mengambil ID pengguna dari parameter query
+
+    // Validasi: Pastikan `userId` ada dan merupakan angka
+    if (!userId || isNaN(userId)) {
+      return res.status(400).send("Invalid user ID");
+    }
+
+    const deletedRows = await User.destroy({
+      where: { id: userId }
+    });
+
+    if (deletedRows === 0) {
+      return res.status(404).send("User not found");
+    }
+
+    return res.status(200).send("User deleted successfully");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send("Internal Server Error");
+  }
+};

@@ -4,6 +4,8 @@
 - run command ```
 npm install ```
 
+- lalu atur koneksi database di file   ```/config/config.json
+
 # Running dev
 
 ```cmd

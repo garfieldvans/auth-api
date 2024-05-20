@@ -32,17 +32,17 @@ const jwt = require("jsonwebtoken");
 };
 
 exports.authenticate = (req, res, next) => {
-    const token = req.cookies.jwt;
-  
-    if (!token) {
-      return res.status(401).send("Access Denied: No Token Provided!");
-    }
-  
-    try {
-      const verified = jwt.verify(token, process.env.SECRET_KEY);
-      req.user = verified;
-      next(); // to pass the execution off to the next middleware
-    } catch (err) {
-      res.status(400).send("Invalid Token");
-    }
-  };
+  const token = req.cookies.jwt;
+
+  if (!token) {
+    return res.status(401).send("Access Denied: No Token Provided!");
+  }
+
+  try {
+    const verified = jwt.verify(token, process.env.SECRET_KEY);
+    req.user = verified;
+    next(); // Pass the execution to the next middleware/controller
+  } catch (err) {
+    res.status(400).send("Invalid Token");
+  }
+};
