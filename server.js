@@ -8,7 +8,7 @@ const db = require("./app/Models");
 const userRoutes = require("./app/Routes/userRoute");
 
 var corsOptions = {
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000", "https://next-auth-project-steel.vercel.app"]
 };
 
 const PORT = process.env.PORT || 8080;

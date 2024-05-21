@@ -39,7 +39,7 @@ exports.authenticate = (req, res, next) => {
   }
 
   try {
-    const verified = jwt.verify(token, process.env.SECRET_KEY);
+    const verified = jwt.verify(token, process.env.PUBLIC_KEY);
     req.user = verified;
     next(); // Pass the execution to the next middleware/controller
   } catch (err) {
